@@ -46,23 +46,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             setIsAdmin(true);
             localStorage.setItem("cepapsy_is_admin", "true");
           } else {
-            // Check if there are any admins at all. If not, auto-promote the first user!
-            const adminsCheck = await getDocs(collection(db, "admins"));
-            if (adminsCheck.empty) {
-              // Create admin doc
-              await setDoc(doc(db, "admins", currentUser.uid), {
-                email: currentUser.email,
-                role: "super_admin",
-                createdAt: new Date().toISOString()
-              });
-              setIsAdmin(true);
-              localStorage.setItem("cepapsy_is_admin", "true");
-            } else {
-              setIsAdmin(false);
-              localStorage.removeItem("cepapsy_is_admin");
-              // Sign out immediately so this non-admin account doesn't linger logged in
-              await signOut(auth);
-            }
+            setIsAdmin(false);
+            localStorage.removeItem("cepapsy_is_admin");
           }
         } catch (err: any) {
           console.warn("Could not verify admin status with Firestore. Checking offline cache:", err);

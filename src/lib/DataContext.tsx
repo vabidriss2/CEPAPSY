@@ -215,8 +215,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     // Check if seeded based on services snapshot
     setIsSeeded(!servicesSnapshotEmpty);
 
-    // 5. Load Appointments & Volunteers if an admin user is currently logged in
-    if (auth.currentUser) {
+    // 5. Load Appointments & Volunteers if an admin user is currently logged in and is a verified admin
+    const isAdminUser = localStorage.getItem("cepapsy_is_admin") === "true";
+    if (auth.currentUser && isAdminUser) {
       try {
         const appSnapshot = await getDocs(query(collection(db, "appointments"), orderBy("createdAt", "desc")));
         const appList: FirestoreBooking[] = [];
