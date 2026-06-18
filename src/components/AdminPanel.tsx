@@ -60,8 +60,8 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [activeTab, setActiveTab] = useState<"general" | "services" | "faq" | "testimonials" | "appointments" | "volunteers">("general");
   
   // Login credentials states
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("cepapsycontact@gmail.com");
+  const [password, setPassword] = useState("Admin123");
   const [isFirstLaunch, setIsFirstLaunch] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
