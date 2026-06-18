@@ -1,0 +1,6 @@
+{
+  "name": "CEPAPSY - Centre d'Accompagnement Psychologique",
+  "description": "Portail professionnel du Centre d'Écoute et d'Accompagnement Psychologique (CEPAPSY). Services de consultations cliniques, de soutien psychosocial, de thérapie et de formation basés à Goma.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

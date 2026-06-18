@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Exact Petroleum Steel Blue of the logo "PSY" (replaces previous light blues) */
+  --color-emerald-custom-50: #f0f7fb;
+  --color-emerald-custom-100: #e0f0fa;
+  --color-emerald-custom-150: #c4e3f5;
+  --color-emerald-custom-200: #98cef0;
+  --color-emerald-custom-300: #5db2e5;
+  --color-emerald-custom-400: #2991cf;
+  --color-emerald-custom-600: #046399; /* Exact logo blue */
+  --color-emerald-custom-700: #034b75;
+  --color-emerald-custom-750: #023b5d;
+  --color-emerald-custom-800: #012b45;
+  --color-emerald-custom-900: #011422;
+
+  /* Exquisite Pure Chocolate Pro Max Palette (no more than 3 color groups overall) */
+  --color-clay-100: #f6efe9;
+  --color-clay-200: #ebdcd0;
+  --color-clay-600: #422110; /* Elegant Dark Cocoa Chocolat */
+  --color-clay-605: #321609;
+  --color-clay-650: #220d04;
+
+  /* Luxurious Warm Cream / Cocoa Neutral Palette */
+  --color-stone-custom-50: #FAF8F5; /* Royal Warm Ivory */
+  --color-stone-custom-100: #F3EBE4;
+  --color-stone-custom-150: #EBE0D5;
+  --color-stone-custom-200: #E4D5C5;
+  --color-stone-custom-300: #CCA890;
+  --color-stone-custom-800: #422110; /* Styled as Chocolat */
+  --color-stone-custom-805: #321609;
+  --color-stone-custom-850: #220d04;
+  --color-stone-custom-900: #1B0801;
+  --color-stone-custom-905: #110500;
+  --color-stone-custom-910: #080200;
+}
+
+/* Custom styles for high-end professional atmosphere */
+body {
+  background-color: var(--color-stone-custom-50);
+  color: var(--color-stone-custom-900);
+  font-family: var(--font-sans);
+}
+
+.serif-title {
+  font-family: var(--font-serif);
+}
+
+.mono-accent {
+  font-family: var(--font-mono);
+}
+
+/* Smooth custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-stone-custom-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-stone-custom-300);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-emerald-custom-200);
+}
