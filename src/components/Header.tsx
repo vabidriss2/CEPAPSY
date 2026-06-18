@@ -4,32 +4,40 @@
  */
 
 import React, { useState } from "react";
-import { Phone, Mail, MapPin, Menu, X, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Phone, Mail, MapPin, Menu, X, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
 import { CEPAPSY_INFO } from "../data";
 import { EpaPsyLogo, AcoRdcLogo } from "./Logos";
+import { useData } from "../lib/DataContext";
 
 interface HeaderProps {
   onNavigate: (sectionId: string) => void;
   activeSection: string;
   onOpenCrisis: () => void;
+  onOpenAdmin: () => void;
 }
 
-export default function Header({ onNavigate, activeSection, onOpenCrisis }: HeaderProps) {
+export default function Header({ onNavigate, activeSection, onOpenCrisis, onOpenAdmin }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { cepapsyInfo } = useData();
 
   const navLinks = [
     { id: "hero", label: "Accueil" },
-    { id: "flowchart", label: "Trouver mon Parcours" },
-    { id: "services", label: "Nos Services" },
-    { id: "about", label: "À Propos & Équipe" },
-    { id: "volunteer", label: "Recrutement Bénévoles" },
-    { id: "booking", label: "Prendre RDV" },
+    { id: "flowchart", label: "Parcours" },
+    { id: "services", label: "Dispositifs" },
+    { id: "faq", label: "FAQ" },
+    { id: "about", label: "L'Équipe" },
+    { id: "temoignages", label: "Témoignages" },
+    { id: "volunteer", label: "Bénévolat" },
   ];
 
   const handleLinkClick = (id: string) => {
     onNavigate(id);
     setIsOpen(false);
   };
+
+  const phoneApp = cepapsyInfo?.phoneAppointments || CEPAPSY_INFO.phoneAppointments;
+  const emailApp = cepapsyInfo?.email || CEPAPSY_INFO.email;
+  const locationApp = cepapsyInfo?.locationMain || CEPAPSY_INFO.locationMain;
 
   return (
     <header className="w-full relative z-40 bg-stone-custom-50 shadow-xs border-b border-stone-custom-200">
@@ -44,18 +52,18 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
             <span className="hidden md:inline-block text-stone-300 opacity-60">|</span>
             <span className="hidden sm:flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-clay-200" />
-              {CEPAPSY_INFO.locationMain.replace("Bureau Principal : ", "")}
+              {locationApp.replace("Bureau Principal : ", "")}
             </span>
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-4">
-            <a href={`tel:${CEPAPSY_INFO.phoneAppointments.replace(/\s+/g, '')}`} className="hover:text-clay-200 transition-colors flex items-center gap-1 font-mono">
+            <a href={`tel:${phoneApp.replace(/\s+/g, '')}`} className="hover:text-clay-200 transition-colors flex items-center gap-1 font-mono">
               <Phone className="w-3.5 h-3.5 text-clay-200" />
-              {CEPAPSY_INFO.phoneAppointments}
+              {phoneApp}
             </a>
-            <a href={`mailto:${CEPAPSY_INFO.email}`} className="hover:text-clay-200 transition-colors flex items-center gap-1 font-mono">
+            <a href={`mailto:${emailApp}`} className="hover:text-clay-200 transition-colors flex items-center gap-1 font-mono">
               <Mail className="w-3.5 h-3.5 text-clay-200" />
-              {CEPAPSY_INFO.email}
+              {emailApp}
             </a>
           </div>
         </div>
@@ -131,6 +139,16 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
           >
             Prendre RDV
           </button>
+          <div className="w-[1px] h-6 bg-stone-custom-200 mx-2"></div>
+          <button
+            onClick={onOpenAdmin}
+            className="p-2 text-stone-custom-800 hover:text-emerald-custom-700 hover:bg-stone-custom-100 rounded-xl transition-all flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+            title="Espace Administration"
+            id="nav-admin-btn"
+          >
+            <Lock className="w-4 h-4 text-[#b57a55]" />
+            Admin
+          </button>
         </nav>
 
         {/* Mobile menu Button */}
@@ -167,10 +185,21 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
           <div className="h-[1px] bg-stone-custom-200 my-2"></div>
           <button
             onClick={() => handleLinkClick("booking")}
-            className="w-full text-center bg-emerald-custom-600 hover:bg-emerald-custom-700 text-stone-custom-50 font-semibold py-3 px-4 rounded-xl shadow-md transition-colors"
+            className="w-full text-center bg-emerald-custom-600 hover:bg-emerald-custom-700 text-stone-custom-50 font-semibold py-3 px-4 rounded-xl shadow-md transition-colors mb-2"
             id="mobile-nav-cta-booking"
           >
             Prendre Rendez-vous
+          </button>
+          <button
+            onClick={() => {
+              onOpenAdmin();
+              setIsOpen(false);
+            }}
+            className="w-full text-center bg-stone-custom-150 hover:bg-stone-custom-200 text-stone-custom-900 font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-wide border border-stone-custom-200"
+            id="mobile-nav-admin-btn"
+          >
+            <Lock className="w-4 h-4 text-[#b57a55]" />
+            Espace Admin
           </button>
         </div>
       )}

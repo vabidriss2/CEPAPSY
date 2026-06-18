@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, Phone, Mail, MapPin, Send, History, X, CheckSquare } from "lucide-react";
-import { CEPAPSY_INFO } from "../data";
 import { BookingRequest } from "../types";
+import { useData } from "../lib/DataContext";
 
 interface BookingFormProps {
   prefilledCategory: string; // prefilled service name from flowchart or list clicks
@@ -14,6 +14,7 @@ interface BookingFormProps {
 }
 
 export default function BookingForm({ prefilledCategory, clearPrefill }: BookingFormProps) {
+  const { submitBooking, cepapsyInfo } = useData();
   const [formData, setFormData] = useState<BookingRequest>({
     fullName: "",
     phone: "",
@@ -53,15 +54,34 @@ export default function BookingForm({ prefilledCategory, clearPrefill }: Booking
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Set default category if empty
+    const finalCategory = formData.category || "Consultation Psychologique Standard";
+    const finalDateStr = formData.dateStr || new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0];
+    
     const submission: BookingRequest = {
       ...formData,
-      category: formData.category || "Consultation Psychologique Standard",
-      dateStr: formData.dateStr || new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0] // default 2 days out
+      category: finalCategory,
+      dateStr: finalDateStr
     };
+
+    // 1. Save to cloud database (Firestore)
+    try {
+      await submitBooking({
+        fullName: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        mode: formData.mode,
+        category: finalCategory,
+        motif: formData.motif,
+        dateStr: finalDateStr,
+        timeStr: formData.timeStr || "10:00"
+      });
+    } catch (err) {
+      console.warn("Saving to cloud failed, proceeding with offline state", err);
+    }
 
     const updated = [submission, ...pastBookings];
     setPastBookings(updated);
@@ -113,11 +133,12 @@ export default function BookingForm({ prefilledCategory, clearPrefill }: Booking
             <span className="text-xs font-bold uppercase tracking-wider text-stone-custom-850 block border-b pb-1.5">
               Infos & Horaires de Consultation
             </span>
+            
             <div className="flex items-start gap-3">
               <Clock className="w-4.5 h-4.5 text-emerald-custom-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-bold text-stone-custom-900 block">Horaires de consultations</span>
-                <span className="text-xs text-stone-custom-800">{CEPAPSY_INFO.workingHours}</span>
+                <span className="text-xs text-stone-custom-800">{cepapsyInfo?.workingHours || "Lun-Ven: 08:30 - 17:30 • Sam: 09:00 - 13:00"}</span>
               </div>
             </div>
             
@@ -125,7 +146,7 @@ export default function BookingForm({ prefilledCategory, clearPrefill }: Booking
               <MapPin className="w-4.5 h-4.5 text-emerald-custom-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-bold text-stone-custom-900 block">Secrétariat Clinique Principal</span>
-                <span className="text-xs text-stone-custom-800">{CEPAPSY_INFO.locationMain.replace("Bureau Principal : ", "")}</span>
+                <span className="text-xs text-stone-custom-800">{(cepapsyInfo?.locationMain || "Goma, RDC").replace("Bureau Principal : ", "")}</span>
               </div>
             </div>
 
@@ -133,7 +154,7 @@ export default function BookingForm({ prefilledCategory, clearPrefill }: Booking
               <Phone className="w-4.5 h-4.5 text-emerald-custom-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-bold text-stone-custom-900 block">WhatsApp direct d'attribution</span>
-                <span className="text-xs text-stone-custom-800 font-mono font-medium">{CEPAPSY_INFO.phoneAppointments}</span>
+                <span className="text-xs text-stone-custom-800 font-mono font-medium">{cepapsyInfo?.phoneAppointments || "+243 970 000 000"}</span>
               </div>
             </div>
           </div>
@@ -420,7 +441,7 @@ export default function BookingForm({ prefilledCategory, clearPrefill }: Booking
 
                 {/* Secret of Confidentially footer inside receipt */}
                 <div className="mt-6 pt-4 border-t border-dashed border-stone-custom-200 text-center text-[10px] text-stone-custom-800 leading-relaxed">
-                  🔒 Secret professionnel absolu • Ce billet d'admission a été synchronisé. Pour confirmer votre rendez-vous, merci de faire un court message WhatsApp contenant l'ID du ticket au coordonnateur d'appui clinique : <strong>{CEPAPSY_INFO.phoneAppointments}</strong>.
+                  🔒 Secret professionnel absolu • Ce billet d'admission a été synchronisé. Pour confirmer votre rendez-vous, merci de faire un court message WhatsApp contenant l'ID du ticket au coordonnateur d'appui clinique : <strong>{cepapsyInfo?.phoneAppointments || "+243 970 000 000"}</strong>.
                 </div>
               </div>
 

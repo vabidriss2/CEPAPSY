@@ -9,16 +9,29 @@ import Header from "./components/Header";
 import CrisisModal from "./components/CrisisModal";
 import Flowchart from "./components/Flowchart";
 import ServicesSection from "./components/ServicesSection";
+import FaqSection from "./components/FaqSection";
 import AboutSection from "./components/AboutSection";
 import VolunteerSection from "./components/VolunteerSection";
 import BookingForm from "./components/BookingForm";
+import TestimonialsSection from "./components/TestimonialsSection";
 import { CEPAPSY_INFO } from "./data";
 import { EpaPsyLogo, AcoRdcLogo } from "./components/Logos";
+import { useData } from "./lib/DataContext";
+import AdminPanel from "./components/AdminPanel";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("hero");
   const [isCrisisOpen, setIsCrisisOpen] = useState(false);
   const [prefilledService, setPrefilledService] = useState("");
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const { cepapsyInfo } = useData();
+
+  const phoneApp = cepapsyInfo?.phoneAppointments || CEPAPSY_INFO.phoneAppointments;
+  const phoneAlt1 = cepapsyInfo?.phoneAlt1 || CEPAPSY_INFO.phoneAlt1;
+  const phoneAlt2 = cepapsyInfo?.phoneAlt2 || CEPAPSY_INFO.phoneAlt2;
+  const phoneAlt3 = cepapsyInfo?.phoneAlt3 || CEPAPSY_INFO.phoneAlt3;
+  const emailApp = cepapsyInfo?.email || CEPAPSY_INFO.email;
+  const emailSecondaryApp = cepapsyInfo?.emailSecondary || CEPAPSY_INFO.emailSecondary;
 
   const handleNavigate = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -51,7 +64,7 @@ export default function App() {
   // Monitor scroll movements to flag the navbar active link dynamically
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["hero", "flowchart", "services", "about", "volunteer", "booking"];
+      const sections = ["hero", "flowchart", "services", "faq", "about", "temoignages", "volunteer", "booking"];
       const scrollPos = window.scrollY + 200;
 
       for (const section of sections) {
@@ -71,6 +84,14 @@ export default function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  if (isAdminOpen) {
+    return (
+      <div className="min-h-screen bg-[#111111] text-white">
+        <AdminPanel onClose={() => setIsAdminOpen(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-stone-custom-50 select-none">
       
@@ -79,6 +100,7 @@ export default function App() {
         onNavigate={handleNavigate}
         activeSection={activeSection}
         onOpenCrisis={() => setIsCrisisOpen(true)}
+        onOpenAdmin={() => setIsAdminOpen(true)}
       />
 
       {/* Main Container */}
@@ -179,9 +201,23 @@ export default function App() {
 
         <hr className="max-w-7xl mx-auto border-stone-custom-200/50" />
 
+        {/* 3.5 Foire Aux Questions (Accordion structure) */}
+        <div>
+          <FaqSection />
+        </div>
+
+        <hr className="max-w-7xl mx-auto border-stone-custom-200/50" />
+
         {/* 4. About & Mission Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <AboutSection />
+        </div>
+
+        <hr className="max-w-7xl mx-auto border-stone-custom-200/50" />
+
+        {/* 4.5 Témoignages / Patient Feedbacks (Professional Credibility Carousel) */}
+        <div>
+          <TestimonialsSection />
         </div>
 
         <hr className="max-w-7xl mx-auto border-stone-custom-200/50" />
@@ -261,22 +297,22 @@ export default function App() {
             <div className="space-y-3 text-xs text-stone-400">
               <p className="flex items-center gap-2">
                 <Smartphone className="w-4 h-4 text-clay-600" />
-                Hotline Standard : {CEPAPSY_INFO.phoneAppointments}
+                Hotline Standard : {phoneApp}
               </p>
               <p className="flex items-center gap-1.5 font-mono">
-                📞 Autres : {CEPAPSY_INFO.phoneAlt1}
+                📞 Autres : {phoneAlt1}
               </p>
               <p className="flex items-center gap-1.5 font-mono">
-                📞 Autres : {CEPAPSY_INFO.phoneAlt2}
+                📞 Autres : {phoneAlt2}
               </p>
               <p className="flex items-center gap-1.5 font-mono">
-                📞 Autres : {CEPAPSY_INFO.phoneAlt3}
+                📞 Autres : {phoneAlt3}
               </p>
-              <p className="flex items-center gap-2 underline">
-                📧 Collège Clinique : {CEPAPSY_INFO.email}
+              <p className="flex items-center gap-2">
+                📧 Collège Clinique : {emailApp}
               </p>
-              <p className="flex items-center gap-2 underline text-[11px] text-stone-500">
-                📥 Représentation ACO : {CEPAPSY_INFO.emailSecondary}
+              <p className="flex items-center gap-2 text-[11px] text-stone-500">
+                📥 Représentation ACO : {emailSecondaryApp}
               </p>
             </div>
           </div>
@@ -289,6 +325,8 @@ export default function App() {
             © {new Date().getFullYear()} CEPAPSY RDC. Tous droits réservés. Association sans but lucratif ACO-RDC.
           </p>
           <div className="flex gap-4">
+            <button onClick={() => setIsAdminOpen(true)} className="hover:underline text-[#b57a55] font-semibold">🔑 Administration</button>
+            <span>•</span>
             <button onClick={() => handleNavigate("about")} className="hover:underline">Mentions Légales</button>
             <span>•</span>
             <button onClick={() => setIsCrisisOpen(true)} className="hover:underline text-emerald-custom-300 font-semibold">Conseils en cas de crise</button>

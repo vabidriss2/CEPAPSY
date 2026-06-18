@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if the user is an admin
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Rules for Admins collection
+    match /admins/{uid} {
+      allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    }
+
+    // Site Config
+    match /site_config/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Services
+    match /services/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // FAQ
+    match /faq/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Testimonials
+    match /testimonials/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Appointments (Bookings)
+    match /appointments/{document} {
+      allow create: if true; // Public submission
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Volunteers (Recruitment)
+    match /volunteers/{document} {
+      allow create: if true; // Public submission
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

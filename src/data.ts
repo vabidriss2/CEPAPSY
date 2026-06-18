@@ -324,3 +324,42 @@ export const INTAKE_FLOWCHART: FlowchartNode[] = [
     ]
   }
 ];
+
+export const TESTIMONIALS_LIST = [
+  {
+    id: "testi-1",
+    quote: "Le CEPAPSY a transformé la dynamique de notre organisation après un événement sécuritaire critique. Leurs psychologues ont su intervenir avec tact, écoute active et méthodes scientifiquement éprouvées.",
+    author: "Responsable des Ressources Humaines",
+    context: "Soutien post-incident en ONG internationale, Goma",
+    rating: 5
+  },
+  {
+    id: "testi-2",
+    quote: "Grâce à l'approche structurée en TCC (Thérapie Cognitive et Comportementale) et une écoute d'une bienveillance infinie, j'ai surmonté un état d'anxiété généralisée qui me paralysait au quotidien.",
+    author: "Patient accompagné en séances individuelles",
+    context: "Prise en charge de l'anxiété, Cabinet Goma",
+    rating: 5
+  },
+  {
+    id: "testi-3",
+    quote: "Un accompagnement remarquable pour notre fils de 12 ans à la suite d'un deuil difficile. Les psychologues du CEPAPSY ont su employer la thérapie par le jeu et le dessin pour libérer sa parole.",
+    author: "Mère d'adolescent",
+    context: "Soutien deuil, Bureau Goma",
+    rating: 5
+  },
+  {
+    id: "testi-4",
+    quote: "Sceptique au début concernant les consultations à distance, le suivi hebdomadaire en ligne pour burnout m'a redonné d'excellentes bases d'équilibre. La confidentialité y est absolue.",
+    author: "Cadre en transition professionnelle",
+    context: "Consultation en ligne, RDC",
+    rating: 5
+  },
+  {
+    id: "testi-5",
+    quote: "La collaboration avec le CEPAPSY a permis de sensibiliser nos équipes éducatives à l'identification des signes de détresse psychologique chez les élèves. Une formation pratique de très haut niveau.",
+    author: "Directeur d'institution scolaire",
+    context: "Atelier de sensibilisation en santé mentale",
+    rating: 5
+  }
+];
+

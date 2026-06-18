@@ -1,0 +1,85 @@
+{
+  "gcpProjectId": "gen-lang-client-0229806444",
+  "firestoreDatabaseId": "ai-studio-974f79ea-114b-45fd-9613-c6a32df41da6",
+  "collections": {
+    "admins": {
+      "uid": {
+        "email": "string",
+        "createdAt": "timestamp",
+        "role": "string"
+      }
+    },
+    "site_config": {
+      "main": {
+        "phoneAppointments": "string",
+        "phoneAlt1": "string",
+        "phoneAlt2": "string",
+        "phoneAlt3": "string",
+        "email": "string",
+        "emailSecondary": "string",
+        "locationMain": "string",
+        "locationKasika": "string",
+        "alertMessage": "string",
+        "featuresCount": "string"
+      }
+    },
+    "services": {
+      "serviceId": {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "iconName": "string",
+        "details": "array",
+        "order": "number"
+      }
+    },
+    "faq": {
+      "faqId": {
+        "id": "string",
+        "question": "string",
+        "answer": "string",
+        "order": "number"
+      }
+    },
+    "testimonials": {
+      "testimonialId": {
+        "id": "string",
+        "quote": "string",
+        "author": "string",
+        "context": "string",
+        "rating": "number",
+        "order": "number"
+      }
+    },
+    "appointments": {
+      "appointmentId": {
+        "fullName": "string",
+        "email": "string",
+        "phone": "string",
+        "age": "string",
+        "concerns": "string",
+        "selectedService": "string",
+        "preferredDays": "array",
+        "preferredTime": "string",
+        "urgency": "string",
+        "contactPreference": "string",
+        "status": "string",
+        "createdAt": "timestamp"
+      }
+    },
+    "volunteers": {
+      "volunteerId": {
+        "name": "string",
+        "email": "string",
+        "phone": "string",
+        "specialization": "string",
+        "indexNumber": "string",
+        "credentialsUrl": "string",
+        "experience": "string",
+        "whyJoin": "string",
+        "status": "string",
+        "createdAt": "timestamp"
+      }
+    }
+  }
+}

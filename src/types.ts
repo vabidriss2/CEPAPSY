@@ -57,3 +57,12 @@ export interface FlowchartNode {
     };
   }[];
 }
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  context: string;
+  rating?: number; // e.g., 5-star professional rating
+}
+

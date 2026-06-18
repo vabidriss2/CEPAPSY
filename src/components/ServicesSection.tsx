@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
-import { SERVICES_LIST } from "../data";
+import React, { useState, useEffect } from "react";
+import { useData } from "../lib/DataContext";
 import { ServiceItem } from "../types";
 import { Baby, User, Heart, Building, ShieldAlert, Sparkles, Check, ChevronRight } from "lucide-react";
 
@@ -13,8 +13,15 @@ interface ServicesSectionProps {
 }
 
 export default function ServicesSection({ onSelectService }: ServicesSectionProps) {
+  const { services } = useData();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [activeExpandedId, setActiveExpandedId] = useState<string | null>("eval-adulte");
+  const [activeExpandedId, setActiveExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (services && services.length > 0 && !activeExpandedId) {
+      setActiveExpandedId(services[0].id);
+    }
+  }, [services]);
 
   const categories = [
     { id: "all", label: "Tous nos services", icon: <Sparkles className="w-4 h-4" /> },
@@ -25,8 +32,8 @@ export default function ServicesSection({ onSelectService }: ServicesSectionProp
   ];
 
   const filteredServices = selectedCategory === "all"
-    ? SERVICES_LIST
-    : SERVICES_LIST.filter(s => s.category === selectedCategory);
+    ? services
+    : services.filter(s => s.category === selectedCategory);
 
   // Helper map for finding relevant SVG icon
   const getIcon = (iconName: string, sizeClass = "w-6 h-6 text-emerald-custom-600") => {
@@ -155,7 +162,12 @@ export default function ServicesSection({ onSelectService }: ServicesSectionProp
         {/* Right column: Active Detail card (Extremely sleek, high-end look) */}
         <div className="hidden lg:block lg:col-span-5 border border-stone-custom-200 bg-stone-custom-100 rounded-3xl p-6 md:p-8 sticky top-6 shadow-sm">
           {activeExpandedId ? (() => {
-            const activeService = SERVICES_LIST.find(s => s.id === activeExpandedId)!;
+            const activeService = services.find(s => s.id === activeExpandedId);
+            if (!activeService) return (
+              <div className="text-center py-20 text-stone-custom-850 font-medium">
+                Aucun détail disponible. Sélectionnez un autre service à gauche.
+              </div>
+            );
             return (
               <div>
                 <span className="text-[10px] font-bold font-mono inline-block px-2.5 py-1 bg-emerald-custom-100 text-emerald-custom-700 rounded uppercase tracking-wider mb-4">

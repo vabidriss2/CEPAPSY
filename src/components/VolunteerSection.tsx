@@ -5,9 +5,10 @@
 
 import React, { useState, useRef } from "react";
 import { UploadCloud, CheckCircle2, FileText, Send, UserCheck, MapPin, Award, Check } from "lucide-react";
-import { CEPAPSY_INFO } from "../data";
+import { useData } from "../lib/DataContext";
 
 export default function VolunteerSection() {
+  const { submitVolunteerApplication } = useData();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -78,12 +79,27 @@ export default function VolunteerSection() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cvFileName) {
       alert("Veuillez d'abord associer votre Curriculum Vitae (CV) pour finaliser l'étude de dossier.");
       return;
     }
+
+    try {
+      await submitVolunteerApplication({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        specialty: formData.specialty,
+        motivation: formData.motivation,
+        cvFileName: cvFileName
+      });
+    } catch (err) {
+      console.warn("Could not save application to cloud, performing local feedback instead", err);
+    }
+
     setIsSubmitted(true);
   };
 
