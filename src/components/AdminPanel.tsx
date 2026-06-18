@@ -27,7 +27,9 @@ import {
   MapPin, 
   Clock, 
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 export default function AdminPanel({ onClose }: { onClose: () => void }) {
@@ -62,6 +64,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   // Login credentials states
   const [email, setEmail] = useState("cepapsycontact@gmail.com");
   const [password, setPassword] = useState("Admin123");
+  const [showPassword, setShowPassword] = useState(false);
   const [isFirstLaunch, setIsFirstLaunch] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -416,13 +419,26 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input 
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] focus:ring-1 focus:ring-[#046399] rounded-xl py-3 pl-11 pr-4 text-xs text-stone-custom-900 placeholder:text-stone-400 font-medium transition-all outline-none"
+                  className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] focus:ring-1 focus:ring-[#046399] rounded-xl py-3 pl-11 pr-11 text-xs text-stone-custom-900 placeholder:text-stone-400 font-medium transition-all outline-none"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-custom-100 transition-colors focus:outline-none cursor-pointer flex items-center justify-center"
+                  title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  id="admin-password-toggle-btn"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
