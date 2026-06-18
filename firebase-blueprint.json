@@ -80,6 +80,17 @@
         "status": "string",
         "createdAt": "timestamp"
       }
+    },
+    "clinical_records": {
+      "recordId": {
+        "patientEmail": "string",
+        "date": "string",
+        "therapistName": "string",
+        "sessionTopic": "string",
+        "content": "string",
+        "recommendations": "string",
+        "createdAt": "timestamp"
+      }
     }
   }
 }

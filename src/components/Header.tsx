@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { Phone, Mail, MapPin, Menu, X, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
+import { Phone, Mail, MapPin, Menu, X, AlertTriangle, ShieldCheck, Lock, User } from "lucide-react";
 import { CEPAPSY_INFO } from "../data";
 import { EpaPsyLogo, AcoRdcLogo } from "./Logos";
 import { useData } from "../lib/DataContext";
@@ -14,9 +14,10 @@ interface HeaderProps {
   activeSection: string;
   onOpenCrisis: () => void;
   onOpenAdmin: () => void;
+  onOpenPatient: () => void;
 }
 
-export default function Header({ onNavigate, activeSection, onOpenCrisis, onOpenAdmin }: HeaderProps) {
+export default function Header({ onNavigate, activeSection, onOpenCrisis, onOpenAdmin, onOpenPatient }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { cepapsyInfo } = useData();
 
@@ -139,7 +140,17 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis, onOpen
           >
             Prendre RDV
           </button>
-          <div className="w-[1px] h-6 bg-stone-custom-200 mx-2"></div>
+          <div className="w-[1px] h-6 bg-stone-custom-200 mx-1.5"></div>
+          <button
+            onClick={onOpenPatient}
+            className="p-2 text-[#046399] hover:text-[#034b75] hover:bg-stone-custom-100 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider border border-[#046399]/20"
+            title="Espace Patient Sécurisé"
+            id="nav-patient-btn"
+          >
+            <User className="w-4 h-4" />
+            Espace Patient
+          </button>
+          <div className="w-[1px] h-6 bg-stone-custom-200 mx-1.5"></div>
           <button
             onClick={onOpenAdmin}
             className="p-2 text-stone-custom-800 hover:text-emerald-custom-700 hover:bg-stone-custom-100 rounded-xl transition-all flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
@@ -189,6 +200,17 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis, onOpen
             id="mobile-nav-cta-booking"
           >
             Prendre Rendez-vous
+          </button>
+          <button
+            onClick={() => {
+              onOpenPatient();
+              setIsOpen(false);
+            }}
+            className="w-full text-center bg-stone-custom-150 hover:bg-stone-custom-200 text-[#046399] font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm uppercase tracking-wide border border-[#046399]/20 mb-2"
+            id="mobile-nav-patient-btn"
+          >
+            <User className="w-4 h-4" />
+            Espace Patient Confidentiel
           </button>
           <button
             onClick={() => {

@@ -18,12 +18,14 @@ import { CEPAPSY_INFO } from "./data";
 import { EpaPsyLogo, AcoRdcLogo } from "./components/Logos";
 import { useData } from "./lib/DataContext";
 import AdminPanel from "./components/AdminPanel";
+import PatientPortal from "./components/PatientPortal";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState("hero");
   const [isCrisisOpen, setIsCrisisOpen] = useState(false);
   const [prefilledService, setPrefilledService] = useState("");
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isPatientOpen, setIsPatientOpen] = useState(false);
   const { cepapsyInfo } = useData();
 
   const phoneApp = cepapsyInfo?.phoneAppointments || CEPAPSY_INFO.phoneAppointments;
@@ -86,8 +88,16 @@ export default function App() {
 
   if (isAdminOpen) {
     return (
-      <div className="min-h-screen bg-[#111111] text-white">
+      <div className="min-h-screen bg-[#111111] text-white overflow-y-auto">
         <AdminPanel onClose={() => setIsAdminOpen(false)} />
+      </div>
+    );
+  }
+
+  if (isPatientOpen) {
+    return (
+      <div className="min-h-screen bg-stone-custom-50 overflow-y-auto">
+        <PatientPortal onClose={() => setIsPatientOpen(false)} />
       </div>
     );
   }
@@ -101,6 +111,7 @@ export default function App() {
         activeSection={activeSection}
         onOpenCrisis={() => setIsCrisisOpen(true)}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenPatient={() => setIsPatientOpen(true)}
       />
 
       {/* Main Container */}

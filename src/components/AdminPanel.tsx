@@ -59,7 +59,17 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   } = useData();
 
   // Navigation tabs in backend
-  const [activeTab, setActiveTab] = useState<"general" | "services" | "faq" | "testimonials" | "appointments" | "volunteers">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "services" | "faq" | "testimonials" | "appointments" | "volunteers" | "clinical_records">("general");
+
+  // Clinical records states
+  const [allClinicalRecords, setAllClinicalRecords] = useState<any[]>([]);
+  const [recordFormLoading, setRecordFormLoading] = useState(false);
+  const [recordPatientEmail, setRecordPatientEmail] = useState("");
+  const [recordDate, setRecordDate] = useState(new Date().toISOString().split("T")[0]);
+  const [recordTherapistName, setRecordTherapistName] = useState("Dr. Praticien CEPAPSY");
+  const [recordSessionTopic, setRecordSessionTopic] = useState("");
+  const [recordContent, setRecordContent] = useState("");
+  const [recordRecommendations, setRecordRecommendations] = useState("");
   
   // Login credentials states
   const [email, setEmail] = useState("cepapsycontact@gmail.com");
@@ -146,6 +156,72 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       setStatusMessage({ type: "error", text: "Erreur lors de la sauvegarde : " + err.message });
     } finally {
       setFormLoading(false);
+    }
+  };
+
+  const fetchAllClinicalRecords = async () => {
+    try {
+      const { db, collection, getDocs, query, orderBy } = await import("../lib/firebase");
+      const recordsSnapshot = await getDocs(query(collection(db, "clinical_records"), orderBy("createdAt", "desc")));
+      const recordsList: any[] = [];
+      recordsSnapshot.forEach((doc) => {
+        recordsList.push({ id: doc.id, ...doc.data() });
+      });
+      setAllClinicalRecords(recordsList);
+    } catch (err) {
+      console.error("Error loading clinical records:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "clinical_records" && user && isAdmin) {
+      fetchAllClinicalRecords();
+    }
+  }, [activeTab, user, isAdmin]);
+
+  const handleAddClinicalRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recordPatientEmail || !recordSessionTopic || !recordContent) {
+      setStatusMessage({ type: "error", text: "Veuillez remplir tous les champs obligatoires du dossier." });
+      return;
+    }
+    setRecordFormLoading(true);
+    setStatusMessage(null);
+    try {
+      const { db, collection, addDoc } = await import("../lib/firebase");
+      await addDoc(collection(db, "clinical_records"), {
+        patientEmail: recordPatientEmail.trim().toLowerCase(),
+        date: recordDate,
+        therapistName: recordTherapistName.trim(),
+        sessionTopic: recordSessionTopic.trim(),
+        content: recordContent.trim(),
+        recommendations: recordRecommendations.trim(),
+        createdAt: new Date().toISOString()
+      });
+      // Reset form fields
+      setRecordSessionTopic("");
+      setRecordContent("");
+      setRecordRecommendations("");
+      setStatusMessage({ type: "success", text: "Suivi thérapeutique enregistré avec succès ! Il sera disponible immédiatement dans l'Espace Patient sécurisé." });
+      fetchAllClinicalRecords();
+    } catch (err: any) {
+      setStatusMessage({ type: "error", text: "Impossible d'enregistrer le suivi : " + err.message });
+    } finally {
+      setRecordFormLoading(false);
+    }
+  };
+
+  const handleDeleteClinicalRecord = async (id: string) => {
+    if (!window.confirm("Êtes-vous certain de vouloir supprimer définitivement cette note clinique ? Cette opération médicale est irréversible et confidentielle.")) {
+      return;
+    }
+    try {
+      const { db, doc, deleteDoc } = await import("../lib/firebase");
+      await deleteDoc(doc(db, "clinical_records", id));
+      setStatusMessage({ type: "success", text: "Note clinique supprimée." });
+      fetchAllClinicalRecords();
+    } catch (err: any) {
+      setStatusMessage({ type: "error", text: "Erreur de suppression : " + err.message });
     }
   };
 
@@ -452,6 +528,23 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 : isFirstLaunch ? "Enregistrer & Initialiser l'instance" : "S'authentifier sur le Cloud"
               }
             </button>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFirstLaunch(!isFirstLaunch);
+                  setStatusMessage(null);
+                }}
+                className="text-[11px] text-[#046399] hover:text-[#034b75] hover:underline font-semibold transition-all focus:outline-none cursor-pointer inline-flex items-center gap-1.5"
+                id="toggle-auth-mode-btn"
+              >
+                {isFirstLaunch 
+                  ? "Accéder au portail de connexion classique" 
+                  : "Première configuration ? Créer le premier administrateur"
+                }
+              </button>
+            </div>
           </form>
 
           <div className="text-center pt-4 border-t border-stone-custom-150">
@@ -602,6 +695,23 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     {volunteers.filter(v => v.status === "new").length > 0 && (
                       <span className="bg-clay-500 text-stone-custom-50 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                         {volunteers.filter(v => v.status === "new").length}
+                      </span>
+                    )}
+                  </button>
+
+                  <button 
+                    onClick={() => { setActiveTab("clinical_records"); setStatusMessage(null); }}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                      activeTab === "clinical_records" ? "bg-emerald-custom-650 text-white" : "text-stone-custom-850 hover:bg-stone-custom-200"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3 flex-1 min-w-0">
+                      <ShieldCheck className="w-4 h-4 text-[#046399]" />
+                      <span className="truncate">Notes & Suivis Cliniques</span>
+                    </span>
+                    {allClinicalRecords.length > 0 && (
+                      <span className="bg-[#046399] text-stone-custom-50 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                        {allClinicalRecords.length}
                       </span>
                     )}
                   </button>
@@ -1526,6 +1636,219 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                         <p className="text-xs text-stone-custom-800 mt-1 max-w-xs mx-auto leading-relaxed">
                           Gérez ici vos futurs recrutements solidaires dès qu'un praticien répond au formulaire national de volontariat.
                         </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 7. CLINICAL RECORDS (PATIENT DOSSIER MANAGEMENT) */}
+              {activeTab === "clinical_records" && (
+                <div className="space-y-6 animate-fadeIn">
+                  <div className="border-b pb-4">
+                    <h3 className="font-extrabold text-stone-custom-900 text-lg sm:text-xl">
+                      Dossiers Confidentiels & Suivis Cliniques des Patients
+                    </h3>
+                    <p className="text-xs text-stone-custom-800 mt-1">
+                      Enregistrez les comptes-rendus thérapeutiques et les exercices prescrits pour chaque patient. Les informations saisies ici sont immédiatement synchronisées de manière sécurisée et s'affichent uniquement dans l'Espace Patient de la personne concernée.
+                    </p>
+                  </div>
+
+                  {/* Form to submit a new record */}
+                  <form onSubmit={handleAddClinicalRecord} className="bg-stone-custom-50/40 p-5 sm:p-6 border border-stone-custom-200 rounded-3xl space-y-4">
+                    <h4 className="font-extrabold text-stone-custom-900 text-sm uppercase tracking-wide flex items-center gap-2 text-[#046399]">
+                      <Plus className="w-4 h-4" />
+                      Saisir une Nouvelle Séance Thérapeutique
+                    </h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      
+                      {/* Email select or input */}
+                      <div className="space-y-1.5 col-span-1 md:col-span-2">
+                        <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                          Patient (Adresse Email d'identification) *
+                        </label>
+                        <div className="flex gap-2">
+                          <input 
+                            type="email"
+                            required
+                            placeholder="patient.email@gmail.com"
+                            value={recordPatientEmail}
+                            onChange={(e) => setRecordPatientEmail(e.target.value)}
+                            className="flex-1 bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-semibold text-stone-custom-900 outline-none transition-all placeholder:text-stone-400"
+                            id="admin-record-email-input"
+                          />
+                          {appointments.length > 0 && (
+                            <select
+                              onChange={(e) => {
+                                if (e.target.value) setRecordPatientEmail(e.target.value);
+                              }}
+                              className="bg-stone-custom-100 border border-stone-custom-200 text-[10px] font-bold py-2 px-2.5 rounded-xl text-stone-custom-900 outline-none cursor-pointer"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>📋 Choisir un patient existant</option>
+                              {Array.from(new Set(appointments.map(a => a.email))).map(email => (
+                                <option key={email} value={email}>{email}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-stone-400">
+                          Saisissez le même email que le patient utilise pour son compte ou pour sa demande de rendez-vous.
+                        </p>
+                      </div>
+
+                      {/* Consultation date */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                          Date de la Séance *
+                        </label>
+                        <input 
+                          type="date"
+                          required
+                          value={recordDate}
+                          onChange={(e) => setRecordDate(e.target.value)}
+                          className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-semibold text-stone-custom-900 outline-none transition-all"
+                          id="admin-record-date-input"
+                        />
+                      </div>
+
+                      {/* Specialist name */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                          Psychologue Clinicien Traitant *
+                        </label>
+                        <input 
+                          type="text"
+                          required
+                          placeholder="Ex: Dr. Praticien CEPAPSY"
+                          value={recordTherapistName}
+                          onChange={(e) => setRecordTherapistName(e.target.value)}
+                          className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-semibold text-stone-custom-900 outline-none transition-all"
+                          id="admin-record-therapist-input"
+                        />
+                      </div>
+
+                      {/* Session topic */}
+                      <div className="space-y-1.5 col-span-1 md:col-span-2">
+                        <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                          Sujet / Objectif de la Séance *
+                        </label>
+                        <input 
+                          type="text"
+                          required
+                          placeholder="Ex : Séance d'évaluation des distorsions cognitives (TCC)"
+                          value={recordSessionTopic}
+                          onChange={(e) => setRecordSessionTopic(e.target.value)}
+                          className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-semibold text-stone-custom-900 outline-none transition-all placeholder:text-stone-400"
+                          id="admin-record-topic-input"
+                        />
+                      </div>
+
+                    </div>
+
+                    {/* Session content */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                        Compte-rendu Clinique / Résumé Confidentiel *
+                      </label>
+                      <textarea 
+                        required
+                        placeholder="Consignez les observations de la séance. Ce compte-rendu sera lisible par le patient pour guider ses progrès d'une semaine à l'autre."
+                        rows={4}
+                        value={recordContent}
+                        onChange={(e) => setRecordContent(e.target.value)}
+                        className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-medium text-stone-custom-900 outline-none transition-all resize-y placeholder:text-stone-400"
+                        id="admin-record-content-input"
+                      />
+                    </div>
+
+                    {/* Prescription / recommendations */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] text-stone-500 font-bold uppercase tracking-wider block">
+                        Prescription Thérapeutique (Exercices & Tâche de Co-thérapie)
+                      </label>
+                      <textarea 
+                        placeholder="Ex: Pratiquer la cohérence cardiaque 3 fois/jour et remplir la grille d'auto-observation de Beck en cas d'anxiété."
+                        rows={2.5}
+                        value={recordRecommendations}
+                        onChange={(e) => setRecordRecommendations(e.target.value)}
+                        className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] rounded-xl py-2 px-3 text-xs font-medium text-stone-custom-900 outline-none transition-all resize-y placeholder:text-stone-400"
+                        id="admin-record-reco-input"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={recordFormLoading}
+                      className="bg-[#046399] hover:bg-[#034b75] text-white font-bold py-2.5 px-6 rounded-xl text-xs uppercase tracking-wider transition-all disabled:bg-stone-300 disabled:cursor-not-allowed cursor-pointer shadow-xs"
+                      id="admin-submit-record-btn"
+                    >
+                      {recordFormLoading ? "Enregistrement clinique..." : "🔒 Enregistrer et Envoyer dans l'Espace Patient"}
+                    </button>
+                  </form>
+
+                  {/* List of existing records query results */}
+                  <div className="space-y-4">
+                    <h4 className="font-extrabold text-stone-custom-900 text-sm uppercase tracking-wide">
+                      Historique Général des Dossiers (ACO / CEPAPSY)
+                    </h4>
+
+                    {allClinicalRecords.length === 0 ? (
+                      <div className="text-center py-12 bg-white rounded-3xl border border-stone-200">
+                        <FileText className="w-12 h-12 text-stone-300 mx-auto mb-4" />
+                        <h4 className="font-bold text-stone-custom-900 text-sm font-sans">Aucun suivi clinique pour le moment</h4>
+                        <p className="text-xs text-stone-custom-800 mt-1 max-w-xs mx-auto leading-relaxed">
+                          Dès que vous consignez une consultation ci-dessus, elle sera archivée et partagée de façon confidentielle.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {allClinicalRecords.map((record) => (
+                          <div key={record.id} className="border border-stone-200 bg-white rounded-2xl p-5 space-y-4 hover:shadow-xs transition-all relative">
+                            
+                            <div className="flex justify-between items-start gap-4 flex-wrap pb-3 col-span-1 border-b border-stone-100">
+                              <div>
+                                <span className="text-[10px] font-bold font-mono tracking-wide text-[#b57a55]">
+                                  📆 SEANCE DU : {new Date(record.date).toLocaleDateString("fr-FR", { year: 'numeric', month: 'long', day: 'numeric' })}
+                                </span>
+                                <h4 className="font-extrabold text-stone-custom-900 text-sm mt-1">
+                                  Sujet : {record.sessionTopic}
+                                </h4>
+                                <p className="text-xs text-[#046399] mt-0.5 font-semibold">
+                                  Patient : {record.patientEmail}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center gap-2.5">
+                                <span className="bg-stone-100 text-stone-700 border text-[10px] font-bold px-2.5 py-1 rounded-md">
+                                  Psy : {record.therapistName}
+                                </span>
+                                <button
+                                  onClick={() => handleDeleteClinicalRecord(record.id)}
+                                  className="p-2 rounded-xl text-clay-505 hover:bg-clay-50 hover:text-clay-700 border hover:border-clay-200 transition-colors cursor-pointer"
+                                  title="Supprimer la note confidentielle"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="text-xs space-y-2 text-stone-custom-800 leading-relaxed">
+                              <div>
+                                <strong className="text-[10.5px] font-mono text-stone-400 block uppercase tracking-wider mb-0.5">Résumé Saisi :</strong>
+                                <p className="whitespace-pre-wrap font-medium">{record.content}</p>
+                              </div>
+                              {record.recommendations && (
+                                <div className="mt-2.5 bg-emerald-50/40 p-3 rounded-xl border border-emerald-100/60">
+                                  <strong className="text-[10.5px] font-mono text-emerald-700 block uppercase tracking-wider mb-0.5">Missions / Recommandations prescrites :</strong>
+                                  <p className="whitespace-pre-wrap font-medium text-emerald-800">{record.recommendations}</p>
+                                </div>
+                              )}
+                            </div>
+
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

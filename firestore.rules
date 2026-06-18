@@ -38,13 +38,20 @@ service cloud.firestore {
     // Appointments (Bookings)
     match /appointments/{document} {
       allow create: if true; // Public submission
-      allow read, update, delete: if isAdmin();
+      allow read: if request.auth != null && (resource.data.email == request.auth.token.email || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     // Volunteers (Recruitment)
     match /volunteers/{document} {
       allow create: if true; // Public submission
       allow read, update, delete: if isAdmin();
+    }
+
+    // Clinical Records (Session Notes, Patient History)
+    match /clinical_records/{document} {
+      allow read: if request.auth != null && (resource.data.patientEmail == request.auth.token.email || isAdmin());
+      allow write: if isAdmin();
     }
   }
 }
