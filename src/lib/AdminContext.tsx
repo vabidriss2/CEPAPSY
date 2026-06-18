@@ -73,15 +73,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       // Double check if this user is in the admins collection
       const adminDoc = await getDoc(doc(db, "admins", res.user.uid));
       if (!adminDoc.exists()) {
-        // Also check if no admins exist (special case for first run setup)
-        const adminsCheck = await getDocs(collection(db, "admins"));
-        if (!adminsCheck.empty) {
-          // Administrators exist, and this general user is not one of them!
-          await signOut(auth);
-          setIsAdmin(false);
-          localStorage.removeItem("cepapsy_is_admin");
-          throw new Error("Accès refusé. Seuls les administrateurs enregistrés peuvent se connecter.");
-        }
+        await signOut(auth);
+        setIsAdmin(false);
+        localStorage.removeItem("cepapsy_is_admin");
+        throw new Error("Accès refusé. Seuls les administrateurs enregistrés peuvent se connecter.");
       }
     } catch (err: any) {
       let friendlyMessage = err.message || "Identifiants de connexion invalides.";
@@ -112,11 +107,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const checkIfNoAdminsExist = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "admins"));
-      return querySnapshot.empty;
+      const configDoc = await getDoc(doc(db, "site_config", "main"));
+      if (configDoc.exists() && configDoc.data()?.adminsInitialized === true) {
+        return false;
+      }
+      return true;
     } catch (e) {
-      console.error(e);
-      // fallback to true to allow registering or setup
+      console.warn("Could not check site_config setup flag, assuming true:", e);
       return true;
     }
   };
@@ -154,6 +151,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         role: "super_admin",
         createdAt: new Date().toISOString()
       });
+
+      // Mark the admin system as initialized in public site_config
+      try {
+        await setDoc(doc(db, "site_config", "main"), {
+          adminsInitialized: true
+        }, { merge: true });
+      } catch (err) {
+        console.warn("Could not write adminsInitialized flag to site_config/main:", err);
+      }
       
       setIsAdmin(true);
       localStorage.setItem("cepapsy_is_admin", "true");
