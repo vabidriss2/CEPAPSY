@@ -28,8 +28,8 @@ export default function CrisisModal({ isOpen, onClose, onSelectBooking }: Crisis
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-custom-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="bg-stone-custom-50 rounded-3xl border border-clay-200 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto flex flex-col">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-custom-900/60 backdrop-blur-xs animate-fadeIn p-4 sm:p-6 flex items-start sm:items-center justify-center">
+      <div className="bg-stone-custom-50 rounded-2xl sm:rounded-3xl border border-clay-200 shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto flex flex-col my-auto">
         {/* Header banner */}
         <div className="bg-emerald-custom-700 text-stone-custom-50 p-6 flex justify-between items-start shrink-0">
           <div className="flex gap-3">

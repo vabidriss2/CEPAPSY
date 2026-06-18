@@ -34,21 +34,21 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
   return (
     <header className="w-full relative z-40 bg-stone-custom-50 shadow-xs border-b border-stone-custom-200">
       {/* Top emergency & Quick Contact bar */}
-      <div className="bg-emerald-custom-600 text-stone-custom-50 text-xs py-2 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 font-medium">
+      <div className="bg-emerald-custom-600 text-stone-custom-50 text-[11px] sm:text-xs py-2 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2.5">
+          <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 text-center md:text-left">
+            <span className="flex items-center justify-center gap-1.5 font-medium">
               <ShieldCheck className="w-4 h-4 text-clay-200" />
               Soutien Psychosocial de Confiance • Goma, RDC
             </span>
-            <span className="hidden md:inline-block text-stone-300">|</span>
-            <span className="hidden md:flex items-center gap-1">
+            <span className="hidden md:inline-block text-stone-300 opacity-60">|</span>
+            <span className="hidden sm:flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-clay-200" />
               {CEPAPSY_INFO.locationMain.replace("Bureau Principal : ", "")}
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-4">
             <a href={`tel:${CEPAPSY_INFO.phoneAppointments.replace(/\s+/g, '')}`} className="hover:text-clay-200 transition-colors flex items-center gap-1 font-mono">
               <Phone className="w-3.5 h-3.5 text-clay-200" />
               {CEPAPSY_INFO.phoneAppointments}
@@ -62,17 +62,17 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
       </div>
 
       {/* Main Crisis Banner Link */}
-      <div className="bg-clay-100 border-b border-clay-200 py-2.5 px-4 text-clay-650 text-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-3">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-clay-600 shrink-0" />
-            <span className="font-medium">
+      <div className="bg-clay-100 border-b border-clay-200 py-3 px-4 text-clay-650 text-xs sm:text-sm">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="flex items-center gap-2 text-center sm:text-left">
+            <AlertTriangle className="w-4.5 h-4.5 text-clay-600 shrink-0" />
+            <span className="font-semibold text-stone-custom-900 leading-snug">
               En situation de crise ou d'urgence psychologique ? (idées suicidaires, panique extrême...)
             </span>
           </div>
           <button
             onClick={onOpenCrisis}
-            className="bg-clay-600 hover:bg-clay-605 text-white font-semibold text-xs py-1 px-3.5 rounded-full shadow-xs transition-colors shrink-0"
+            className="w-full sm:w-auto text-center bg-clay-600 hover:bg-clay-605 text-white font-bold text-xs py-2 px-4 sm:py-1.5 sm:px-4 rounded-full shadow-xs hover:shadow-md transition-all shrink-0 uppercase sm:normal-case tracking-wider sm:tracking-normal cursor-pointer"
             id="emergency-banner-btn"
           >
             Premiers Secours
@@ -83,22 +83,22 @@ export default function Header({ onNavigate, activeSection, onOpenCrisis }: Head
       {/* Main clean navigation hierarchy */}
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Brand Group */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleLinkClick("hero")}>
-          <div className="flex items-center gap-1.5 shrink-0 bg-white p-1 rounded-xl shadow-xs border border-stone-custom-200">
-            <EpaPsyLogo size={38} className="h-9 w-auto" />
-            <div className="w-[1px] h-6 bg-stone-custom-150"></div>
-            <AcoRdcLogo size={38} className="h-9 w-auto" />
+        <div className="flex items-center gap-2 sm:gap-3 cursor-pointer select-none" onClick={() => handleLinkClick("hero")}>
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-white p-1 rounded-xl shadow-xs border border-stone-custom-200">
+            <EpaPsyLogo size={34} className="h-8 sm:h-9 w-auto" />
+            <div className="w-[1px] h-5 sm:h-6 bg-stone-custom-150"></div>
+            <AcoRdcLogo size={34} className="h-8 sm:h-9 w-auto" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h1 className="text-xl font-bold tracking-tight text-emerald-custom-700 leading-none">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-emerald-custom-700 leading-none">
                 CEPAPSY
               </h1>
-              <span className="text-[10px] bg-clay-100 text-clay-600 font-bold px-1.5 py-0.5 rounded uppercase font-mono tracking-wider">
+              <span className="text-[8px] sm:text-[10px] bg-clay-100 text-clay-600 font-bold px-1.5 py-0.5 rounded uppercase font-mono tracking-wider">
                 ACO-RDC
               </span>
             </div>
-            <p className="text-[10px] text-stone-custom-800 tracking-wide mt-0.5 uppercase max-w-[280px] truncate">
+            <p className="text-[9px] sm:text-[10px] text-stone-custom-800 tracking-wide mt-0.5 uppercase max-w-[160px] xs:max-w-[200px] sm:max-w-[280px] md:max-w-none truncate">
               Centre d'Écoute & d'Accompagnement Psychologique
             </p>
           </div>

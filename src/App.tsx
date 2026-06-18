@@ -127,21 +127,21 @@ export default function App() {
             </div>
 
             {/* Quick stats highlights */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto pt-10 md:pt-16 border-t border-stone-custom-200">
-              <div className="text-center">
-                <span className="block text-2xl md:text-3xl font-extrabold text-emerald-custom-700 serif-title">100%</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 md:gap-6 max-w-4xl mx-auto pt-10 md:pt-16 border-t border-stone-custom-200">
+              <div className="text-center px-2">
+                <span className="block text-2xl sm:text-3xl font-extrabold text-emerald-custom-700 serif-title">100%</span>
                 <span className="text-[10px] uppercase font-bold text-stone-custom-800 tracking-wider mt-1 block">Confidentialité</span>
               </div>
-              <div className="text-center border-l border-stone-custom-200">
-                <span className="block text-2xl md:text-3xl font-extrabold text-emerald-custom-700 serif-title">TCC & EMDR</span>
-                <span className="text-[10px] uppercase font-bold text-stone-custom-800 tracking-wider mt-1 block">Approches Scientifiques</span>
+              <div className="text-center border-l border-stone-custom-200 px-2">
+                <span className="block text-2xl sm:text-3xl font-extrabold text-emerald-custom-700 serif-title">TCC & EMDR</span>
+                <span className="text-[10px] uppercase font-bold text-stone-custom-800 tracking-wider mt-1 block">Thérapies Scientifiques</span>
               </div>
-              <div className="text-center border-l border-stone-custom-200">
-                <span className="block text-2xl md:text-3xl font-extrabold text-emerald-custom-700 serif-title">HQ Goma</span>
+              <div className="text-center md:border-l border-stone-custom-200 px-2">
+                <span className="block text-2xl sm:text-3xl font-extrabold text-emerald-custom-700 serif-title">HQ Goma</span>
                 <span className="text-[10px] uppercase font-bold text-stone-custom-800 tracking-wider mt-1 block">Cabinet & Domicile</span>
               </div>
-              <div className="text-center border-l border-stone-custom-200">
-                <span className="block text-2xl md:text-3xl font-extrabold text-emerald-custom-700 serif-title">24/7+</span>
+              <div className="text-center border-l border-stone-custom-200 px-2">
+                <span className="block text-2xl sm:text-3xl font-extrabold text-emerald-custom-700 serif-title">24/7+</span>
                 <span className="text-[10px] uppercase font-bold text-stone-custom-800 tracking-wider mt-1 block">Soutien Mobile/Ligne</span>
               </div>
             </div>

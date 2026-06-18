@@ -72,7 +72,7 @@ export default function Flowchart({ onSelectBooking, onSelectVolunteer }: Flowch
   };
 
   return (
-    <div className="w-full bg-stone-custom-100 rounded-3xl border border-stone-custom-200 p-6 md:p-10 shadow-sm relative overflow-hidden" id="flowchart-section">
+    <div className="w-full bg-stone-custom-100 rounded-2xl sm:rounded-3xl border border-stone-custom-200 p-4 sm:p-6 md:p-10 shadow-sm relative overflow-hidden" id="flowchart-section">
       {/* Background soft ambient vectors */}
       <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-emerald-custom-100/30 blur-3xl -mr-20 -mt-20 -z-10"></div>
       
@@ -82,15 +82,15 @@ export default function Flowchart({ onSelectBooking, onSelectVolunteer }: Flowch
           <Layers className="w-3.5 h-3.5" />
           Orientation Thérapeutique Interactive
         </span>
-        <h2 className="serif-title text-3xl md:text-4xl font-extrabold text-stone-custom-900 tracking-tight leading-tight">
+        <h2 className="serif-title text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-custom-900 tracking-tight leading-tight">
           Trouvez l'aide adaptée à vos besoins
         </h2>
-        <p className="text-sm md:text-base text-stone-custom-800 mt-2 max-w-xl mx-auto">
+        <p className="text-xs sm:text-sm md:text-base text-stone-custom-800 mt-2 max-w-xl mx-auto">
           Inspiré du portail d'orientation clinique, ce guiding interactif vous aiguille vers le service, le spécialiste et l'approche thérapeutique les plus adaptés à votre profil.
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-stone-custom-50 rounded-2xl border border-stone-custom-200/80 p-6 md:p-8 shadow-xs relative">
+      <div className="max-w-2xl mx-auto bg-stone-custom-50 rounded-2xl border border-stone-custom-200/80 p-4 sm:p-6 md:p-8 shadow-xs relative">
         <AnimatePresence mode="wait">
           {!isResultNode ? (
             <motion.div

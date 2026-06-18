@@ -87,37 +87,73 @@ export default function ServicesSection({ onSelectService }: ServicesSectionProp
             return (
               <div
                 key={service.id}
-                onClick={() => setActiveExpandedId(service.id)}
-                className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer ${
-                  isExpanded
-                    ? "bg-emerald-custom-50/40 border-emerald-custom-600 shadow-xs"
-                    : "bg-stone-custom-100/50 border-stone-custom-200 hover:border-stone-custom-300"
-                }`}
-                id={`service-row-${service.id}`}
+                className="space-y-3"
               >
-                <div className="flex items-start gap-4 justify-between">
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2.5 rounded-xl ${isExpanded ? "bg-emerald-custom-100" : "bg-stone-custom-100"}`}>
-                      {getIcon(service.iconName)}
+                <div
+                  onClick={() => setActiveExpandedId(isExpanded ? null : service.id)}
+                  className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                    isExpanded
+                      ? "bg-emerald-custom-50/40 border-emerald-custom-600 shadow-xs"
+                      : "bg-stone-custom-100/50 border-stone-custom-200 hover:border-stone-custom-300"
+                  }`}
+                  id={`service-row-${service.id}`}
+                >
+                  <div className="flex items-start gap-4 justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2.5 rounded-xl ${isExpanded ? "bg-emerald-custom-100" : "bg-stone-custom-100"}`}>
+                        {getIcon(service.iconName)}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-stone-custom-900 text-base md:text-lg leading-tight group-hover:text-emerald-custom-700">
+                          {service.title}
+                        </h3>
+                        <p className="text-xs md:text-sm text-stone-custom-800 mt-1 lines-clamp-2 leading-relaxed">
+                          {service.description}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-stone-custom-900 text-base md:text-lg leading-tight group-hover:text-emerald-custom-700">
-                        {service.title}
-                      </h3>
-                      <p className="text-xs md:text-sm text-stone-custom-800 mt-1 lines-clamp-2 leading-relaxed">
-                        {service.description}
-                      </p>
-                    </div>
+                    <ChevronRight className={`w-5 h-5 text-stone-custom-800 shrink-0 mt-1 transition-transform ${isExpanded ? "rotate-90 text-emerald-custom-600" : ""}`} />
                   </div>
-                  <ChevronRight className={`w-5 h-5 text-stone-custom-800 shrink-0 mt-1 transition-transform ${isExpanded ? "rotate-90 text-emerald-custom-600" : ""}`} />
                 </div>
+
+                {isExpanded && (
+                  <div className="lg:hidden mt-2 bg-stone-custom-100/80 border border-stone-custom-200/80 rounded-2xl p-4 sm:p-5 space-y-4 animate-fadeIn">
+                    <p className="text-xs sm:text-sm text-stone-custom-850 leading-relaxed">
+                      {service.description}
+                    </p>
+                    {service.details && (
+                      <div className="space-y-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-custom-800 block">
+                          Problématiques prises en soin :
+                        </span>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {service.details.map((detail, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5 text-xs text-stone-custom-800 leading-normal">
+                              <Check className="w-3.5 h-3.5 text-emerald-custom-600 mt-0.5 shrink-0" />
+                              <span>{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectService(service.title);
+                      }}
+                      className="w-full bg-emerald-custom-600 hover:bg-emerald-custom-700 text-stone-custom-50 font-bold py-3.5 px-4 rounded-xl shadow-xs transition-colors text-xs uppercase tracking-wide cursor-pointer text-center block mt-3"
+                    >
+                      Prendre RDV pour ce soin
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
 
         {/* Right column: Active Detail card (Extremely sleek, high-end look) */}
-        <div className="lg:col-span-5 border border-stone-custom-200 bg-stone-custom-100 rounded-3xl p-6 md:p-8 sticky top-6 shadow-sm">
+        <div className="hidden lg:block lg:col-span-5 border border-stone-custom-200 bg-stone-custom-100 rounded-3xl p-6 md:p-8 sticky top-6 shadow-sm">
           {activeExpandedId ? (() => {
             const activeService = SERVICES_LIST.find(s => s.id === activeExpandedId)!;
             return (
