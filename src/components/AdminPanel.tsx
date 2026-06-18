@@ -326,6 +326,131 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="fixed inset-0 z-50 bg-stone-custom-50 flex flex-col items-center justify-center p-8">
+        <RefreshCw className="w-12 h-12 text-[#046399] animate-spin" />
+        <p className="text-xs font-mono text-[#012b45] font-bold mt-4">Authentification sécurisée en cours...</p>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-custom-900/60 backdrop-blur-md p-4 sm:p-6 md:p-10 flex flex-col justify-center items-center">
+        {/* Background close click */}
+        <div className="absolute inset-0 -z-10" onClick={onClose}></div>
+
+        <div className="bg-stone-custom-50 border border-stone-custom-200 rounded-3xl p-5 sm:p-10 max-w-md w-full space-y-6 shadow-2xl relative animate-fadeIn text-stone-custom-900">
+          
+          {/* Elegant top-right close trigger */}
+          <button 
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2.5 rounded-xl text-[#321609] hover:bg-stone-custom-150 transition-all cursor-pointer border border-stone-custom-200/40"
+            aria-label="Fermer"
+            id="admin-login-close-btn"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="text-center space-y-3">
+            <div className="mx-auto w-12 h-12 rounded-2xl bg-clay-100 border border-[#b57a55]/20 flex items-center justify-center text-[#b57a55]">
+              <Lock className="w-5 h-5" />
+            </div>
+            
+            <div className="space-y-1">
+              <span className="inline-flex items-center gap-1 bg-clay-100 text-[#b57a55] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-[#b57a55]/10">
+                Secrétariat de direction
+              </span>
+              <h3 className="font-extrabold text-stone-custom-900 text-lg sm:text-xl tracking-tight">
+                {isFirstLaunch ? "Première Initialisation" : "Portail de Connexion"}
+              </h3>
+            </div>
+
+            <p className="text-xs text-stone-custom-800 leading-relaxed font-sans max-w-xs mx-auto">
+              {isFirstLaunch 
+                ? "Aucun administrateur enregistré sur cette instance. Veuillez définir les accès d'origine CEPAPSY."
+                : "Identifiez-vous pour gérer les prises de soins, éditer le site et modérer les candidatures de bénévolat."
+              }
+            </p>
+          </div>
+
+          {/* Banner alerts with clear and highly legible styles */}
+          {statusMessage && (
+            <div className={`p-4 rounded-xl flex items-start gap-2.5 text-xs font-medium ${
+              statusMessage.type === "success" 
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-200" 
+                : "bg-clay-100 text-[#422110] border border-[#ebdcd0]"
+            }`}>
+              {statusMessage.type === "success" ? (
+                <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0 text-clay-600 mt-0.5" />
+              )}
+              <span className="leading-tight shrink">{statusMessage.text}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div className="space-y-1.5 block">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-custom-850 block">
+                Adresse Email Professionnelle
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input 
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nom@cepapsy.org"
+                  className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] focus:ring-1 focus:ring-[#046399] rounded-xl py-3 pl-11 pr-4 text-xs text-stone-custom-900 placeholder:text-stone-400 font-medium transition-all outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5 block">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-custom-850 block">
+                Mot de passe sécurisé
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input 
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full bg-white border border-stone-custom-200 focus:border-[#046399] focus:ring-1 focus:ring-[#046399] rounded-xl py-3 pl-11 pr-4 text-xs text-stone-custom-900 placeholder:text-stone-400 font-medium transition-all outline-none"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={formLoading}
+              className="w-full bg-[#046399] hover:bg-[#034b75] disabled:bg-stone-300 text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all text-xs uppercase tracking-wider cursor-pointer text-center block mt-6 whitespace-normal break-words leading-tight"
+            >
+              {formLoading 
+                ? "Traitement en cours..." 
+                : isFirstLaunch ? "Enregistrer & Initialiser l'instance" : "S'authentifier sur le Cloud"
+              }
+            </button>
+          </form>
+
+          <div className="text-center pt-4 border-t border-stone-custom-150">
+            <span className="text-[10px] text-[#422110] font-mono font-medium block">
+              Agrément Syndical ACO-RDC • Sécurité SSL 256 bits
+            </span>
+            <span className="text-[9px] text-stone-500 font-mono mt-1 block">
+              Instancié Clinique CEPAPSY RDC
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-custom-900/40 backdrop-blur-md p-4 sm:p-6 md:p-10 flex flex-col justify-start">
       
@@ -335,9 +460,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       <div className="bg-stone-custom-50 rounded-3xl border border-stone-custom-200 shadow-2xl max-w-7xl w-full mx-auto flex flex-col min-h-[85vh] my-auto overflow-hidden animate-fadeIn">
         
         {/* Header Ribbon */}
-        <div className="bg-stone-custom-900 text-stone-custom-50 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-emerald-custom-700 gap-4 shrink-0">
+        <div className="bg-stone-custom-900 text-stone-custom-50 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#046399] gap-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-emerald-custom-600/20 text-emerald-custom-500 border border-emerald-custom-700">
+            <div className="p-3 rounded-2xl bg-[#046399]/20 text-[#2991cf] border border-[#046399]">
               <Lock className="w-5 h-5" />
             </div>
             <div>
@@ -346,7 +471,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   Portail Administration Clinique
                 </h2>
                 {user && isAdmin && (
-                  <span className="bg-emerald-custom-600/30 text-emerald-custom-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-custom-500/30 uppercase tracking-widest">
+                  <span className="bg-[#046399]/30 text-[#2991cf] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#046399]/30 uppercase tracking-widest">
                     ACTIF (CLOUD)
                   </span>
                 )}
@@ -376,103 +501,8 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
             </button>
           </div>
         </div>
-
-        {/* Global Loading overlay */}
-        {authLoading && (
-          <div className="flex-1 flex flex-col items-center justify-center p-10 space-y-4">
-            <RefreshCw className="w-10 h-10 text-emerald-custom-600 animate-spin" />
-            <p className="text-xs font-mono text-stone-custom-800">Authentification en cours...</p>
-          </div>
-        )}
-
-        {/* NOT AUTHENTICATED: Gorgeous login card */}
-        {!authLoading && (!user || !isAdmin) && (
-          <div className="flex-1 flex items-center justify-center p-6 md:p-12 max-w-lg mx-auto w-full">
-            <div className="bg-white border border-stone-custom-200 rounded-3xl p-6 sm:p-8 w-full space-y-6 shadow-sm">
-              <div className="text-center space-y-2">
-                <span className="inline-flex items-center gap-1 bg-clay-100 text-[#b57a55] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest border border-[#b57a55]/20">
-                  Secrétariat de direction
-                </span>
-                <h3 className="font-extrabold text-stone-custom-900 text-xl md:text-2xl tracking-normal">
-                  {isFirstLaunch ? "Première Initialisation" : "Portail de Connexion"}
-                </h3>
-                <p className="text-xs text-stone-custom-800 max-w-xs mx-auto leading-relaxed">
-                  {isFirstLaunch 
-                    ? "Aucun administrateur enregistré sur cette instance. Veuillez définir les accès d'origine CEPAPSY."
-                    : "Identifiez-vous pour gérer les prises de soins, éditer le site et modérer les candidatures de bénévolat."
-                  }
-                </p>
-              </div>
-
-              {/* Banner alerts */}
-              {statusMessage && (
-                <div className={`p-4 rounded-xl flex items-start gap-2.5 text-xs ${
-                  statusMessage.type === "success" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-clay-50 text-clay-800 border border-clay-200"
-                }`}>
-                  {statusMessage.type === "success" ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-                  <span>{statusMessage.text}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleLoginSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-custom-800 block">
-                    Adresse Email Professionnelle
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                    <input 
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="nom@cepapsy.org"
-                      className="w-full bg-stone-custom-50 border border-stone-custom-200 focus:border-emerald-custom-600 focus:ring-1 focus:ring-emerald-custom-600 rounded-xl py-3 pl-11 pr-4 text-xs text-stone-custom-900 placeholder:text-stone-400 transition-all outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-custom-800 block">
-                    Mot de passe sécurisé
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                    <input 
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full bg-stone-custom-50 border border-stone-custom-200 focus:border-emerald-custom-600 focus:ring-1 focus:ring-emerald-custom-600 rounded-xl py-3 pl-11 pr-4 text-xs text-stone-custom-900 placeholder:text-stone-400 transition-all outline-none"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  className="w-full bg-emerald-custom-700 hover:bg-emerald-custom-800 disabled:bg-stone-300 text-stone-custom-50 font-bold py-3.5 px-4 rounded-xl shadow-xs hover:shadow-md transition-all text-xs uppercase tracking-wider cursor-pointer text-center block mt-6"
-                >
-                  {formLoading 
-                    ? "Traitement en cours..." 
-                    : isFirstLaunch ? "Enregistrer & Initialiser" : "S'authentifier sur le Cloud"
-                  }
-                </button>
-              </form>
-
-              <div className="text-center">
-                <span className="text-[10px] text-stone-500 font-mono">
-                  Agrément Syndical ACO-RDC • Sécurité SSL 256 bits
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* AUTHENTICATED: Beautiful Full-featured Admin Dashboard */}
-        {!authLoading && user && isAdmin && (
-          <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             
             {/* Sidebar Navigation */}
             <aside className="w-full md:w-64 bg-stone-custom-100 border-r border-stone-custom-200 p-4 shrink-0 flex flex-col justify-between">
@@ -1488,7 +1518,6 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
             </main>
           </div>
-        )}
 
       </div>
     </div>
