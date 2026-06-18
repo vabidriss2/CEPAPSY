@@ -136,8 +136,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   // Load all public data
   const refreshAllData = async () => {
+    setLoading(true);
+    let servicesSnapshotEmpty = true;
+
+    // 1. Load general info
     try {
-      // 1. Load general info
       const infoDocRef = doc(db, "site_config", "main");
       const infoDoc = await getDoc(infoDocRef);
       if (infoDoc.exists()) {
@@ -149,8 +152,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       } else {
         setCepapsyInfo(CEPAPSY_INFO);
       }
+    } catch (err) {
+      console.warn("Could not load site_config from Firestore, using offline fallback:", err);
+      setCepapsyInfo(CEPAPSY_INFO);
+    }
 
-      // 2. Load services
+    // 2. Load services
+    try {
       const servicesSnapshot = await getDocs(collection(db, "services"));
       if (!servicesSnapshot.empty) {
         const servicesList: ServiceItem[] = [];
@@ -158,12 +166,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           servicesList.push({ id: doc.id, ...doc.data() } as ServiceItem);
         });
         setServices(servicesList);
+        servicesSnapshotEmpty = false;
       } else {
         // Fallback to static list
         setServices(SERVICES_LIST);
       }
+    } catch (err) {
+      console.warn("Could not load services from Firestore, using offline fallback:", err);
+      setServices(SERVICES_LIST);
+    }
 
-      // 3. Load FAQs
+    // 3. Load FAQs
+    try {
       const faqSnapshot = await getDocs(collection(db, "faq"));
       if (!faqSnapshot.empty) {
         const faqsList: FaqItem[] = [];
@@ -176,8 +190,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       } else {
         setFaqs(DEFAULT_FAQS);
       }
+    } catch (err) {
+      console.warn("Could not load FAQ from Firestore, using offline fallback:", err);
+      setFaqs(DEFAULT_FAQS);
+    }
 
-      // 4. Load Testimonials
+    // 4. Load Testimonials
+    try {
       const testimonialsSnapshot = await getDocs(collection(db, "testimonials"));
       if (!testimonialsSnapshot.empty) {
         const testiList: Testimonial[] = [];
@@ -188,42 +207,40 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       } else {
         setTestimonials(TESTIMONIALS_LIST);
       }
+    } catch (err) {
+      console.warn("Could not load testimonials from Firestore, using offline fallback:", err);
+      setTestimonials(TESTIMONIALS_LIST);
+    }
 
-      // Check if seeded based on services snapshot
-      setIsSeeded(!servicesSnapshot.empty);
+    // Check if seeded based on services snapshot
+    setIsSeeded(!servicesSnapshotEmpty);
 
-      // 5. Load Appointments & Volunteers if an admin user is currently logged in
-      if (auth.currentUser) {
-        try {
-          const appSnapshot = await getDocs(query(collection(db, "appointments"), orderBy("createdAt", "desc")));
-          const appList: FirestoreBooking[] = [];
-          appSnapshot.forEach((doc) => {
-            appList.push({ id: doc.id, ...doc.data() } as FirestoreBooking);
-          });
-          setAppointments(appList);
-
-          const volSnapshot = await getDocs(query(collection(db, "volunteers"), orderBy("createdAt", "desc")));
-          const volList: FirestoreVolunteer[] = [];
-          volSnapshot.forEach((doc) => {
-            volList.push({ id: doc.id, ...doc.data() } as FirestoreVolunteer);
-          });
-          setVolunteers(volList);
-        } catch (adminErr) {
-          // Rule permission blocks loading these if auth is stale or not admin, ignore
-          console.log("Not authorized to load appointments/volunteers list. Unlocking on admin check.");
-        }
+    // 5. Load Appointments & Volunteers if an admin user is currently logged in
+    if (auth.currentUser) {
+      try {
+        const appSnapshot = await getDocs(query(collection(db, "appointments"), orderBy("createdAt", "desc")));
+        const appList: FirestoreBooking[] = [];
+        appSnapshot.forEach((doc) => {
+          appList.push({ id: doc.id, ...doc.data() } as FirestoreBooking);
+        });
+        setAppointments(appList);
+      } catch (adminErr) {
+        console.warn("Not authorized/unable to load appointments list:", adminErr);
       }
 
-    } catch (err) {
-      console.error("Error reading database contents:", err);
-      // Ensure fallbacks are correct anyway
-      setServices(SERVICES_LIST);
-      setFaqs(DEFAULT_FAQS);
-      setTestimonials(TESTIMONIALS_LIST);
-      setCepapsyInfo(CEPAPSY_INFO);
-    } finally {
-      setLoading(false);
+      try {
+        const volSnapshot = await getDocs(query(collection(db, "volunteers"), orderBy("createdAt", "desc")));
+        const volList: FirestoreVolunteer[] = [];
+        volSnapshot.forEach((doc) => {
+          volList.push({ id: doc.id, ...doc.data() } as FirestoreVolunteer);
+        });
+        setVolunteers(volList);
+      } catch (adminErr) {
+        console.warn("Not authorized/unable to load volunteers list:", adminErr);
+      }
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {

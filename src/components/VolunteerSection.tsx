@@ -8,7 +8,7 @@ import { UploadCloud, CheckCircle2, FileText, Send, UserCheck, MapPin, Award, Ch
 import { useData } from "../lib/DataContext";
 
 export default function VolunteerSection() {
-  const { submitVolunteerApplication } = useData();
+  const { submitVolunteer } = useData();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -87,7 +87,7 @@ export default function VolunteerSection() {
     }
 
     try {
-      await submitVolunteerApplication({
+      await submitVolunteer({
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
